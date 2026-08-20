@@ -67,15 +67,8 @@ export function Hero() {
           </div>
         </div>
 
-        <div className="relative mx-auto flex aspect-square w-full max-w-md items-center justify-center lg:max-w-lg">
-          <div
-            className="absolute inset-0 opacity-60 blur-3xl"
-            style={{
-              background:
-                "conic-gradient(from 180deg, var(--primary), var(--accent), var(--primary))",
-            }}
-          />
-          <div className="relative size-full overflow-hidden rounded-full border border-white/10 shadow-2xl">
+        <div className="relative mx-auto w-full max-w-md pb-8 pl-6 lg:max-w-lg">
+          <div className="relative aspect-square overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl">
             <Image
               src="/hero-key.png"
               alt="Clé de voiture et clé classique sur un porte-clés"
@@ -84,7 +77,17 @@ export function Hero() {
               sizes="(min-width: 1024px) 32rem, 24rem"
               className="object-cover"
             />
-            <div className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-white/10 ring-inset" />
+            <div className="pointer-events-none absolute inset-0 rounded-[2rem] ring-1 ring-white/10 ring-inset" />
+          </div>
+
+          <div className="absolute bottom-0 left-0 flex items-center gap-3 rounded-2xl border border-white/10 bg-background/90 px-4 py-3 shadow-xl backdrop-blur">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400">
+              <ShieldCheck className="size-5" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold">Intervention garantie</p>
+              <p className="text-xs text-muted-foreground">Devis clair avant travaux</p>
+            </div>
           </div>
         </div>
       </div>
