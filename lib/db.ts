@@ -1,13 +1,10 @@
-import { Pool, type PoolClient, type QueryResultRow } from "pg";
+import type { Pool, PoolClient, QueryResultRow } from "pg";
+import { createPool } from "@/lib/pg-pool";
 import type { Demande, StatusHistoryEntry, User } from "@/lib/db-types";
 
 const globalForDb = globalThis as unknown as { pgPool: Pool | undefined };
 
-export const pool =
-  globalForDb.pgPool ??
-  new Pool({
-    connectionString: process.env.DATABASE_URL,
-  });
+export const pool = globalForDb.pgPool ?? createPool();
 
 if (process.env.NODE_ENV !== "production") globalForDb.pgPool = pool;
 

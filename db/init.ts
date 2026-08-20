@@ -1,12 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
-import { Pool } from "pg";
+import { createPool } from "@/lib/pg-pool";
 
 process.loadEnvFile?.();
 
 async function main() {
   const schema = fs.readFileSync(path.join(import.meta.dirname, "schema.sql"), "utf-8");
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const pool = createPool();
   try {
     await pool.query(schema);
     console.log("Database schema created.");

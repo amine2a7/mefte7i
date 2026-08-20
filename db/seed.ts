@@ -1,11 +1,11 @@
 import bcrypt from "bcryptjs";
-import { Pool } from "pg";
+import { createPool } from "@/lib/pg-pool";
 import type { BienType, DemandeKind, DemandeStatus, Urgence } from "@/lib/db-types";
 import { formatMontant } from "@/lib/constants";
 
 process.loadEnvFile?.();
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = createPool();
 
 function newId() {
   return crypto.randomUUID();
