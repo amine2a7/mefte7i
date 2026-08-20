@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { newId, queryOne, withTransaction, mapDemande } from "@/lib/db";
+import { newId, newClientCode, queryOne, withTransaction, mapDemande } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { formatMontant } from "@/lib/constants";
 
@@ -30,21 +30,22 @@ const incidentSchema = z.object({
 
 export async function createIncidentAction(
   input: z.infer<typeof incidentSchema>,
-): Promise<ActionResult<{ id: string }>> {
+): Promise<ActionResult<{ id: string; clientCode: string }>> {
   const parsed = incidentSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0].message };
   }
   const data = parsed.data;
   const id = newId();
+  const clientCode = newClientCode();
 
   await withTransaction(async (client) => {
     await client.query(
       `INSERT INTO demandes (
         id, kind, bien_type, problem_type, description, urgence,
         adresse_intervention, latitude, longitude,
-        nom_contact, telephone_contact, email_contact, photos, status
-      ) VALUES ($1,'INCIDENT',$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,'EN_ATTENTE')`,
+        nom_contact, telephone_contact, email_contact, photos, status, client_code
+      ) VALUES ($1,'INCIDENT',$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,'EN_ATTENTE',$13)`,
       [
         id,
         data.bienType,
@@ -58,6 +59,7 @@ export async function createIncidentAction(
         data.telephoneContact,
         data.emailContact,
         data.photos && data.photos.length > 0 ? JSON.stringify(data.photos) : null,
+        clientCode,
       ],
     );
     await client.query(
@@ -69,7 +71,7 @@ export async function createIncidentAction(
   revalidatePath("/agent/dashboard");
   revalidatePath("/admin/dashboard");
 
-  return { success: true, data: { id } };
+  return { success: true, data: { id, clientCode } };
 }
 
 const commandeSchema = z
@@ -96,13 +98,14 @@ const commandeSchema = z
 
 export async function createCommandeAction(
   input: z.infer<typeof commandeSchema>,
-): Promise<ActionResult<{ id: string }>> {
+): Promise<ActionResult<{ id: string; clientCode: string }>> {
   const parsed = commandeSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0].message };
   }
   const data = parsed.data;
   const id = newId();
+  const clientCode = newClientCode();
   const adresseLivraison =
     data.modeLivraison === "LIVRAISON" ? data.adresseLivraison : "Retrait en agence";
   const latitude = data.modeLivraison === "LIVRAISON" ? (data.latitude ?? null) : null;
@@ -113,8 +116,8 @@ export async function createCommandeAction(
       `INSERT INTO demandes (
         id, kind, bien_type, marque_modele_ou_serrure, annee_vehicule, avec_programmation, quantite,
         mode_livraison, adresse_livraison, latitude, longitude,
-        nom_contact, telephone_contact, email_contact, status
-      ) VALUES ($1,'COMMANDE',$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,'EN_ATTENTE')`,
+        nom_contact, telephone_contact, email_contact, status, client_code
+      ) VALUES ($1,'COMMANDE',$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,'EN_ATTENTE',$14)`,
       [
         id,
         data.bienType,
@@ -129,6 +132,7 @@ export async function createCommandeAction(
         data.nomContact,
         data.telephoneContact,
         data.emailContact,
+        clientCode,
       ],
     );
     await client.query(
@@ -140,7 +144,7 @@ export async function createCommandeAction(
   revalidatePath("/agent/dashboard");
   revalidatePath("/admin/dashboard");
 
-  return { success: true, data: { id } };
+  return { success: true, data: { id, clientCode } };
 }
 
 async function requireAgentOrAdmin() {
@@ -148,6 +152,12 @@ async function requireAgentOrAdmin() {
   if (!session || (session.role !== "AGENT" && session.role !== "ADMIN")) {
     return null;
   }
+  return session;
+}
+
+async function requireAdmin() {
+  const session = await getSession();
+  if (!session || session.role !== "ADMIN") return null;
   return session;
 }
 
@@ -249,9 +259,20 @@ export async function rejectDemandeAction(
   return { success: true, data: undefined };
 }
 
+/**
+ * Admin-only override. In the normal flow, only the client can validate a
+ * demande (via the public tracking page with their phone + private code) —
+ * see app/actions/suivi.ts. This exists so an admin can close out a demande
+ * when the client can't use the tracking page (e.g. cash-only, unreachable).
+ */
 export async function validateDemandeAction(demandeId: string): Promise<ActionResult> {
-  const session = await requireAgentOrAdmin();
-  if (!session) return { success: false, error: "Non autorisé" };
+  const session = await requireAdmin();
+  if (!session) {
+    return {
+      success: false,
+      error: "Seul le client (page de suivi) ou un administrateur peut valider cette demande.",
+    };
+  }
 
   const demande = await getDemande(demandeId);
   if (!demande) return { success: false, error: "Demande introuvable" };
@@ -268,7 +289,7 @@ export async function validateDemandeAction(demandeId: string): Promise<ActionRe
     ]);
     await client.query(
       `INSERT INTO status_history (id, demande_id, status, changed_by_id, note) VALUES ($1,$2,'VALIDE',$3,$4)`,
-      [newId(), demandeId, session.userId, "Intervention terminée et payée"],
+      [newId(), demandeId, session.userId, "Validé manuellement par un administrateur"],
     );
   });
 

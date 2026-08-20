@@ -8,11 +8,13 @@ import { toast } from "sonner";
 import {
   Car,
   CheckCircle2,
+  Clock,
   Home,
   Loader2,
   Mail,
   MapPin,
   Phone,
+  ShieldAlert,
   User,
   XCircle,
 } from "lucide-react";
@@ -31,7 +33,7 @@ import { Label } from "@/components/ui/label";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { UrgenceBadge, BienTypeBadge } from "@/components/dashboard/badges";
 import { demandeTitle, modeLivraisonLabel } from "@/lib/labels";
-import { parsePhotos, type DemandeWithRelations } from "@/lib/types";
+import { parsePhotos, type DemandeForStaff } from "@/lib/types";
 import { CURRENCY_SYMBOL, formatMontant } from "@/lib/constants";
 import {
   markEnCoursAction,
@@ -44,10 +46,12 @@ export function DemandeDetailSheet({
   demande,
   open,
   onOpenChange,
+  viewerRole,
 }: {
-  demande: DemandeWithRelations | null;
+  demande: DemandeForStaff | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  viewerRole: "AGENT" | "ADMIN";
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -57,7 +61,7 @@ export function DemandeDetailSheet({
 
   if (!demande) return null;
 
-  async function run(fn: () => Promise<{ success: boolean; error?: string }>) {
+  async function run(fn: () => Promise<{ success: boolean; error?: string }>, closeOnSuccess = true) {
     setLoading(true);
     const result = await fn();
     setLoading(false);
@@ -67,7 +71,7 @@ export function DemandeDetailSheet({
     }
     toast.success("Demande mise à jour");
     router.refresh();
-    onOpenChange(false);
+    if (closeOnSuccess) onOpenChange(false);
   }
 
   return (
@@ -85,6 +89,16 @@ export function DemandeDetailSheet({
         </SheetHeader>
 
         <div className="space-y-6 px-4 pb-6">
+          {demande.clientDispute && (
+            <div className="flex items-start gap-2 rounded-2xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+              <ShieldAlert className="mt-0.5 size-4 shrink-0" />
+              <div>
+                <p className="font-medium">Litige signalé par le client</p>
+                {demande.clientDisputeNote && <p className="mt-1 text-destructive/90">{demande.clientDisputeNote}</p>}
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-wrap gap-2">
             <StatusBadge status={demande.status} />
             <BienTypeBadge bienType={demande.bienType} />
@@ -171,7 +185,7 @@ export function DemandeDetailSheet({
               {demande.status === "EN_ATTENTE" && (
                 <Button
                   disabled={loading}
-                  onClick={() => run(() => markEnCoursAction(demande.id))}
+                  onClick={() => run(() => markEnCoursAction(demande.id), false)}
                   className="w-full rounded-xl"
                 >
                   {loading ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
@@ -197,7 +211,7 @@ export function DemandeDetailSheet({
                       <Button
                         variant="outline"
                         disabled={loading || !montant}
-                        onClick={() => run(() => setMontantAction(demande.id, parseFloat(montant)))}
+                        onClick={() => run(() => setMontantAction(demande.id, parseFloat(montant)), false)}
                         className="h-11 shrink-0 rounded-xl"
                       >
                         Enregistrer
@@ -210,14 +224,24 @@ export function DemandeDetailSheet({
                     )}
                   </div>
 
-                  <Button
-                    disabled={loading || demande.montant == null}
-                    onClick={() => run(() => validateDemandeAction(demande.id))}
-                    className="w-full rounded-xl"
-                  >
-                    {loading ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
-                    Valider (intervention terminée et payée)
-                  </Button>
+                  {viewerRole === "ADMIN" ? (
+                    <Button
+                      disabled={loading || demande.montant == null}
+                      onClick={() => run(() => validateDemandeAction(demande.id))}
+                      className="w-full rounded-xl"
+                    >
+                      {loading ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
+                      Valider manuellement (admin)
+                    </Button>
+                  ) : (
+                    demande.montant != null && (
+                      <p className="flex items-start gap-2 rounded-xl border border-border/60 bg-background/60 p-3 text-xs text-muted-foreground">
+                        <Clock className="mt-0.5 size-3.5 shrink-0" />
+                        En attente de confirmation du client (paiement + service) via la page de
+                        suivi, avec le numéro {demande.telephoneContact}.
+                      </p>
+                    )
+                  )}
                 </>
               )}
 

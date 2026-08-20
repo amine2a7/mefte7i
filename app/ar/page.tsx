@@ -123,7 +123,7 @@ export default function ArabicHomePage() {
               </div>
 
               <h1 className="mt-6 text-4xl font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl">
-                أمانك في أيدٍ <span className="text-primary">أمينة</span>.
+                أمانتك في أيدٍ <span className="text-primary">أمينة</span>.
               </h1>
 
               <p className="mt-6 max-w-xl text-lg text-muted-foreground text-pretty">
@@ -334,6 +334,9 @@ export default function ArabicHomePage() {
             <div>
               <h4 className="text-sm font-semibold text-foreground">الشركة</h4>
               <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <Link href="/suivi" className="hover:text-foreground">تتبع طلبي</Link>
+                </li>
                 <li>
                   <Link href="/login" className="hover:text-foreground">مساحة الوكيل</Link>
                 </li>

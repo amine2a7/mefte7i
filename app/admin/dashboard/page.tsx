@@ -124,7 +124,7 @@ export default async function AdminDashboardPage() {
               <div className="flex justify-end">
                 <DeleteDemandesDialog />
               </div>
-              <AgentDashboardClient demandes={demandes} />
+              <AgentDashboardClient demandes={demandes} viewerRole="ADMIN" />
             </TabsContent>
 
             <TabsContent value="transactions">

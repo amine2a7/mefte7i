@@ -1,7 +1,7 @@
 import { query, mapDemande, mapStatusHistory } from "@/lib/db";
-import type { DemandeWithRelations } from "@/lib/db-types";
+import type { DemandeForStaff, DemandeWithRelations } from "@/lib/db-types";
 
-export async function getAllDemandesWithRelations(): Promise<DemandeWithRelations[]> {
+export async function getAllDemandesWithRelations(): Promise<DemandeForStaff[]> {
   const [demandeRows, historyRows] = await Promise.all([
     query<Record<string, unknown>>(
       `SELECT d.*, a.id AS agent_join_id, a.name AS agent_name
@@ -32,11 +32,14 @@ export async function getAllDemandesWithRelations(): Promise<DemandeWithRelation
   }
 
   return demandeRows.map((row) => {
-    const demande = mapDemande(row);
-    return {
+    const full = mapDemande(row);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { clientCode, ...demande } = full;
+    const withRelations: Omit<DemandeWithRelations, "clientCode"> = {
       ...demande,
       agent: row.agent_join_id ? { id: row.agent_join_id as string, name: row.agent_name as string } : null,
       statusHistory: historyByDemande.get(demande.id) ?? [],
     };
+    return withRelations;
   });
 }

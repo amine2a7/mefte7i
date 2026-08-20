@@ -28,6 +28,16 @@ export function newId(): string {
   return crypto.randomUUID();
 }
 
+const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I to avoid confusion
+
+export function newClientCode(): string {
+  let code = "";
+  for (let i = 0; i < 6; i++) {
+    code += CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)];
+  }
+  return code;
+}
+
 export async function withTransaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
   const client = await pool.connect();
   try {
@@ -83,6 +93,10 @@ export function mapDemande(row: Record<string, unknown>): Demande {
     status: row.status as Demande["status"],
     montant: row.montant != null ? Number(row.montant) : null,
     raisonRejet: row.raison_rejet as string | null,
+    clientCode: row.client_code as string,
+    clientValideAt: row.client_valide_at as Date | null,
+    clientDispute: row.client_dispute as boolean,
+    clientDisputeNote: row.client_dispute_note as string | null,
     createdAt: row.created_at as Date,
     updatedAt: row.updated_at as Date,
   };

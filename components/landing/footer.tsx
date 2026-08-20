@@ -31,6 +31,11 @@ export function Footer() {
             <h4 className="text-sm font-semibold text-foreground">Entreprise</h4>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
               <li>
+                <Link href="/suivi" className="hover:text-foreground">
+                  Suivre ma demande
+                </Link>
+              </li>
+              <li>
                 <Link href="/login" className="hover:text-foreground">
                   Espace agent
                 </Link>

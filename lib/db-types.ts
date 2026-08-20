@@ -39,6 +39,10 @@ export interface Demande {
   status: DemandeStatus;
   montant: number | null;
   raisonRejet: string | null;
+  clientCode: string;
+  clientValideAt: Date | null;
+  clientDispute: boolean;
+  clientDisputeNote: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -56,3 +60,9 @@ export interface DemandeWithRelations extends Demande {
   agent: { id: string; name: string } | null;
   statusHistory: (StatusHistoryEntry & { changedByUser: { name: string } | null })[];
 }
+
+/**
+ * What agent/admin dashboards receive: the client's private confirmation
+ * code is never sent to their browser, so the type genuinely lacks it.
+ */
+export type DemandeForStaff = Omit<DemandeWithRelations, "clientCode">;

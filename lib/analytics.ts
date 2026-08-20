@@ -1,12 +1,12 @@
 import { COMMISSION_RATE } from "@/lib/constants";
-import type { DemandeWithRelations } from "@/lib/types";
+import type { DemandeForStaff } from "@/lib/types";
 
-export function getValidationDate(demande: DemandeWithRelations): Date | null {
+export function getValidationDate(demande: DemandeForStaff): Date | null {
   const entry = demande.statusHistory.find((h) => h.status === "VALIDE");
   return entry ? entry.changedAt : demande.status === "VALIDE" ? demande.updatedAt : null;
 }
 
-export function computeKpis(demandes: DemandeWithRelations[]) {
+export function computeKpis(demandes: DemandeForStaff[]) {
   const incidents = demandes.filter((d) => d.kind === "INCIDENT");
   const commandes = demandes.filter((d) => d.kind === "COMMANDE");
   const enAttente = demandes.filter((d) => d.status === "EN_ATTENTE").length;
@@ -48,7 +48,7 @@ export function computeKpis(demandes: DemandeWithRelations[]) {
   };
 }
 
-export function computeDailyRevenue(demandes: DemandeWithRelations[], days = 30) {
+export function computeDailyRevenue(demandes: DemandeForStaff[], days = 30) {
   const buckets = new Map<string, { revenue: number; commission: number }>();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -78,7 +78,7 @@ export function computeDailyRevenue(demandes: DemandeWithRelations[], days = 30)
   }));
 }
 
-export function computeSplitByBien(demandes: DemandeWithRelations[]) {
+export function computeSplitByBien(demandes: DemandeForStaff[]) {
   const voiture = demandes.filter((d) => d.bienType === "VOITURE").length;
   const maison = demandes.filter((d) => d.bienType === "MAISON").length;
   return [
@@ -87,7 +87,7 @@ export function computeSplitByBien(demandes: DemandeWithRelations[]) {
   ];
 }
 
-export function computeSplitByKind(demandes: DemandeWithRelations[]) {
+export function computeSplitByKind(demandes: DemandeForStaff[]) {
   const incident = demandes.filter((d) => d.kind === "INCIDENT").length;
   const commande = demandes.filter((d) => d.kind === "COMMANDE").length;
   return [
@@ -97,7 +97,7 @@ export function computeSplitByKind(demandes: DemandeWithRelations[]) {
 }
 
 export function computeAgentPerformance(
-  demandes: DemandeWithRelations[],
+  demandes: DemandeForStaff[],
   agents: { id: string; name: string }[],
 ) {
   return agents.map((agent) => {

@@ -37,6 +37,7 @@ type FormValues = z.infer<typeof schema>;
 export function CommandeForm() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [clientCode, setClientCode] = useState<string | null>(null);
   const {
     control,
     register,
@@ -65,6 +66,7 @@ export function CommandeForm() {
       return;
     }
     toast.success("Votre commande a été envoyée");
+    setClientCode(result.data.clientCode);
     setSubmitted(true);
   }
 
@@ -73,6 +75,7 @@ export function CommandeForm() {
       <SubmissionSuccess
         title="Votre commande a été envoyée"
         description="Un agent va vous contacter pour confirmer les détails et le prix."
+        clientCode={clientCode ?? undefined}
       />
     );
   }

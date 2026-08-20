@@ -16,9 +16,9 @@ import {
 import { COMMISSION_RATE, formatMontant } from "@/lib/constants";
 import { demandeTitle } from "@/lib/labels";
 import { getValidationDate } from "@/lib/analytics";
-import type { DemandeWithRelations } from "@/lib/types";
+import type { DemandeForStaff } from "@/lib/types";
 
-export function TransactionsTable({ demandes }: { demandes: DemandeWithRelations[] }) {
+export function TransactionsTable({ demandes }: { demandes: DemandeForStaff[] }) {
   const rows = useMemo(
     () =>
       demandes

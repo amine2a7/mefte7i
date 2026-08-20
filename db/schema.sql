@@ -59,6 +59,14 @@ CREATE TABLE demandes (
   montant DOUBLE PRECISION,
   raison_rejet TEXT,
 
+  -- Private code shown to the client once at submission. Required (with their
+  -- phone number) to confirm or dispute a demande on the public tracking page.
+  -- Never selected into any agent/admin-facing query.
+  client_code TEXT NOT NULL,
+  client_valide_at TIMESTAMPTZ,
+  client_dispute BOOLEAN NOT NULL DEFAULT false,
+  client_dispute_note TEXT,
+
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

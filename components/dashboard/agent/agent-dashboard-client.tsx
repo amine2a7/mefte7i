@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -11,7 +11,7 @@ import {
 } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { ArrowUpDown, Car, Home, ShoppingBag, Siren } from "lucide-react";
+import { ArrowUpDown, Car, Home, ShieldAlert, ShoppingBag, Siren } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -33,12 +33,26 @@ import { UrgenceBadge } from "@/components/dashboard/badges";
 import { DemandeDetailSheet } from "@/components/dashboard/agent/demande-detail-sheet";
 import { demandeTitle } from "@/lib/labels";
 import { formatMontant } from "@/lib/constants";
-import type { DemandeWithRelations } from "@/lib/types";
+import type { DemandeForStaff } from "@/lib/types";
 
 const URGENCE_PRIORITY: Record<string, number> = { TRES_URGENT: 0, URGENT: 1, NORMAL: 2 };
 
-export function AgentDashboardClient({ demandes }: { demandes: DemandeWithRelations[] }) {
-  const [selected, setSelected] = useState<DemandeWithRelations | null>(null);
+export function AgentDashboardClient({
+  demandes,
+  viewerRole = "AGENT",
+}: {
+  demandes: DemandeForStaff[];
+  viewerRole?: "AGENT" | "ADMIN";
+}) {
+  const [selected, setSelected] = useState<DemandeForStaff | null>(null);
+
+  // Keep the open detail sheet in sync with fresh server data after a
+  // non-terminal action (e.g. setting the montant) that leaves it open.
+  useEffect(() => {
+    if (!selected) return;
+    const fresh = demandes.find((d) => d.id === selected.id);
+    if (fresh && fresh !== selected) setSelected(fresh);
+  }, [demandes, selected]);
   const [statusFilter, setStatusFilter] = useState<string>("TOUS");
   const [bienFilter, setBienFilter] = useState<string>("TOUS");
   const [urgenceFilter, setUrgenceFilter] = useState<string>("TOUS");
@@ -65,7 +79,7 @@ export function AgentDashboardClient({ demandes }: { demandes: DemandeWithRelati
     [demandes, statusFilter, bienFilter, urgenceFilter],
   );
 
-  const columns = useMemo<ColumnDef<DemandeWithRelations>[]>(
+  const columns = useMemo<ColumnDef<DemandeForStaff>[]>(
     () => [
       {
         id: "type",
@@ -90,7 +104,12 @@ export function AgentDashboardClient({ demandes }: { demandes: DemandeWithRelati
         header: "Demande",
         cell: ({ row }) => (
           <div>
-            <p className="font-medium">{demandeTitle(row.original)}</p>
+            <p className="flex items-center gap-1.5 font-medium">
+              {row.original.clientDispute && (
+                <ShieldAlert className="size-3.5 shrink-0 text-destructive" aria-label="Litige signalé" />
+              )}
+              {demandeTitle(row.original)}
+            </p>
             <p className="text-xs text-muted-foreground">{row.original.nomContact}</p>
           </div>
         ),
@@ -253,7 +272,12 @@ export function AgentDashboardClient({ demandes }: { demandes: DemandeWithRelati
         </TabsContent>
       </Tabs>
 
-      <DemandeDetailSheet demande={selected} open={!!selected} onOpenChange={(o) => !o && setSelected(null)} />
+      <DemandeDetailSheet
+        demande={selected}
+        open={!!selected}
+        onOpenChange={(o) => !o && setSelected(null)}
+        viewerRole={viewerRole}
+      />
 
       {pendingCount > 0 && (
         <p className="text-xs text-muted-foreground">

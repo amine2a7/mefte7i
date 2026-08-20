@@ -1,4 +1,4 @@
-export type { DemandeWithRelations } from "@/lib/db-types";
+export type { DemandeWithRelations, DemandeForStaff } from "@/lib/db-types";
 
 export function parsePhotos(photos: string | null): string[] {
   if (!photos) return [];

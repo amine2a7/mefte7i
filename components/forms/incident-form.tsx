@@ -59,6 +59,7 @@ export function IncidentForm() {
   const [loading, setLoading] = useState(false);
   const [photos, setPhotos] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
+  const [clientCode, setClientCode] = useState<string | null>(null);
   const {
     control,
     register,
@@ -87,6 +88,7 @@ export function IncidentForm() {
       return;
     }
     toast.success("Votre demande a été envoyée");
+    setClientCode(result.data.clientCode);
     setSubmitted(true);
   }
 
@@ -95,6 +97,7 @@ export function IncidentForm() {
       <SubmissionSuccess
         title="Votre demande a été envoyée"
         description="Un agent va vous contacter très prochainement pour confirmer l'intervention."
+        clientCode={clientCode ?? undefined}
       />
     );
   }
