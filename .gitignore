@@ -32,9 +32,19 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
+
+# local isolated postgres dev cluster (never commit DB data)
+/.pgdata/
+
+# claude code local tooling
+.claude/
+
+# ad-hoc screenshots from local verification scripts
+scripts/screenshots/
 
 # typescript
 *.tsbuildinfo
