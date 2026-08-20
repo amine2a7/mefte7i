@@ -5,6 +5,18 @@ const CITIES = [
   "Tunis ",
   "Ariana",
   "Ben Arous",
+  "Marsa",
+  "La Goulette",
+  "Carthage",
+  "Sidi Bou Said",
+  "La Soukra",
+  "Raoued",
+  "El Menzah",
+  "El Manar",
+  
+
+  
+
  
   
 ];

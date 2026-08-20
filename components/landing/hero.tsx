@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { KeyRound, ShieldCheck, Siren, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { APP_NAME, EMERGENCY_AVAILABLE } from "@/lib/constants";
@@ -68,19 +69,22 @@ export function Hero() {
 
         <div className="relative mx-auto flex aspect-square w-full max-w-md items-center justify-center lg:max-w-lg">
           <div
-            className="absolute inset-0 rounded-full opacity-60 blur-3xl"
+            className="absolute inset-0 opacity-60 blur-3xl"
             style={{
               background:
                 "conic-gradient(from 180deg, var(--primary), var(--accent), var(--primary))",
             }}
           />
-          <div className="relative flex size-full items-center justify-center rounded-full border border-white/10 bg-card/60 shadow-2xl backdrop-blur">
-            <div className="flex size-2/3 items-center justify-center rounded-full border border-white/10 bg-gradient-to-br from-primary/20 to-accent/10">
-              <KeyRound
-                className="size-1/2 text-primary drop-shadow-[0_0_35px_var(--primary)]"
-                strokeWidth={1.25}
-              />
-            </div>
+          <div className="relative size-full overflow-hidden rounded-full border border-white/10 shadow-2xl">
+            <Image
+              src="/hero-key.png"
+              alt="Clé de voiture et clé classique sur un porte-clés"
+              fill
+              priority
+              sizes="(min-width: 1024px) 32rem, 24rem"
+              className="object-cover"
+            />
+            <div className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-white/10 ring-inset" />
           </div>
         </div>
       </div>
