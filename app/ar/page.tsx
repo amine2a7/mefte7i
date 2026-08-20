@@ -95,6 +95,9 @@ export default function ArabicHomePage() {
             <Button variant="ghost" render={<Link href="/" />} nativeButton={false} className="h-9 px-3 text-xs">
               FR
             </Button>
+            <Button variant="ghost" render={<Link href="/suivi" />} nativeButton={false} className="hidden sm:inline-flex">
+              تتبع
+            </Button>
             <Button render={<Link href="/incident" />} nativeButton={false} className="hidden shadow-[0_0_20px_-6px_var(--primary)] sm:inline-flex">
               الإبلاغ عن حادث
             </Button>

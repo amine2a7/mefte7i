@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, KeyRound } from "lucide-react";
+import { ArrowLeft, KeyRound, ShieldCheck } from "lucide-react";
 import { APP_NAME } from "@/lib/constants";
 
 export function SimpleHeader({ backHref = "/" }: { backHref?: string }) {
@@ -16,6 +16,10 @@ export function SimpleHeader({ backHref = "/" }: { backHref?: string }) {
           </span>
           <span className="tracking-tight">{APP_NAME}</span>
         </div>
+        <Link href="/suivi" className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+          <ShieldCheck className="size-4" />
+          <span className="hidden sm:inline">Suivi</span>
+        </Link>
       </div>
     </header>
   );
