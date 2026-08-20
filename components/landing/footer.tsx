@@ -47,7 +47,7 @@ export function Footer() {
                 <Phone className="size-4 text-primary" /> {SUPPORT_PHONE}
               </li>
               <li className="flex items-center gap-2">
-                <Mail className="size-4 text-primary" /> contact@mefte7i.tn
+                <Mail className="size-4 text-primary" /> aminekhadraoui51@gmail.com
               </li>
               <li className="flex items-center gap-2">
                 <MapPin className="size-4 text-primary" /> Tunis  & Grand Tunis
