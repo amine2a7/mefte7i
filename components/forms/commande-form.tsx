@@ -5,34 +5,32 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Car, Home, Loader2, Minus, Plus, ShoppingBag, Store, Truck } from "lucide-react";
+import { Car, Home, Loader2, Minus, Plus, ShoppingBag, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Field } from "@/components/forms/field";
 import { ChoiceCards } from "@/components/forms/choice-cards";
-import { LocationButton } from "@/components/forms/location-button";
 import { SubmissionSuccess } from "@/components/forms/submission-success";
 import { createCommandeAction } from "@/app/actions/demandes";
+
+const CURRENT_YEAR = new Date().getFullYear();
 
 const schema = z
   .object({
     bienType: z.enum(["VOITURE", "MAISON"]),
     marqueModeleOuSerrure: z.string().min(1, "Ce champ est requis"),
+    anneeVehicule: z.number().int().min(1970).max(CURRENT_YEAR + 1).optional(),
     avecProgrammation: z.boolean(),
     quantite: z.number().int().min(1).max(20),
-    modeLivraison: z.enum(["RETRAIT", "LIVRAISON"]),
-    adresseLivraison: z.string().optional(),
-    latitude: z.number().optional(),
-    longitude: z.number().optional(),
     nomContact: z.string().min(2, "Le nom est requis"),
     telephoneContact: z.string().min(6, "Téléphone invalide"),
     emailContact: z.string().email("Email invalide"),
   })
-  .refine(
-    (data) => data.modeLivraison !== "LIVRAISON" || (data.adresseLivraison?.length ?? 0) >= 5,
-    { message: "Adresse de livraison requise", path: ["adresseLivraison"] },
-  );
+  .refine((data) => data.bienType !== "VOITURE" || data.anneeVehicule != null, {
+    message: "Année du véhicule requise",
+    path: ["anneeVehicule"],
+  });
 
 type FormValues = z.infer<typeof schema>;
 
@@ -52,17 +50,15 @@ export function CommandeForm() {
       bienType: "VOITURE",
       avecProgrammation: false,
       quantite: 1,
-      modeLivraison: "RETRAIT",
     },
   });
 
   const bienType = watch("bienType");
-  const modeLivraison = watch("modeLivraison");
   const quantite = watch("quantite");
 
   async function onSubmit(values: FormValues) {
     setLoading(true);
-    const result = await createCommandeAction(values);
+    const result = await createCommandeAction({ ...values, modeLivraison: "RETRAIT" });
     setLoading(false);
     if (!result.success) {
       toast.error(result.error);
@@ -117,6 +113,21 @@ export function CommandeForm() {
           />
         </Field>
 
+        {bienType === "VOITURE" && (
+          <Field label="Année du véhicule" htmlFor="anneeVehicule" error={errors.anneeVehicule?.message} required>
+            <Input
+              id="anneeVehicule"
+              type="number"
+              inputMode="numeric"
+              min={1970}
+              max={CURRENT_YEAR + 1}
+              className="h-12"
+              placeholder={`Ex : ${CURRENT_YEAR}`}
+              {...register("anneeVehicule", { valueAsNumber: true })}
+            />
+          </Field>
+        )}
+
         <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-card/40 px-4 py-3">
           <div>
             <p className="text-sm font-medium">Avec programmation / copie de puce</p>
@@ -160,40 +171,16 @@ export function CommandeForm() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-muted-foreground">Retrait ou livraison</h2>
-        <Controller
-          control={control}
-          name="modeLivraison"
-          render={({ field }) => (
-            <ChoiceCards
-              value={field.value}
-              onChange={field.onChange}
-              options={[
-                { value: "RETRAIT", label: "Retrait en agence", icon: Store },
-                { value: "LIVRAISON", label: "Livraison", icon: Truck },
-              ]}
-            />
-          )}
-        />
-        {modeLivraison === "LIVRAISON" && (
-          <>
-            <Field label="Adresse de livraison" htmlFor="adresseLivraison" error={errors.adresseLivraison?.message} required>
-              <Input
-                id="adresseLivraison"
-                className="h-12"
-                placeholder="12 rue de la Paix, 75002 Tunis "
-                {...register("adresseLivraison")}
-              />
-            </Field>
-            <LocationButton
-              onLocated={({ address, lat, lng }) => {
-                setValue("adresseLivraison", address, { shouldValidate: true });
-                setValue("latitude", lat);
-                setValue("longitude", lng);
-              }}
-            />
-          </>
-        )}
+        <h2 className="text-sm font-semibold text-muted-foreground">Retrait</h2>
+        <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card/40 px-4 py-3">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Store className="size-5" />
+          </div>
+          <div>
+            <p className="text-sm font-medium">Retrait en agence uniquement</p>
+            <p className="text-xs text-muted-foreground">Un agent vous communiquera les détails après confirmation.</p>
+          </div>
+        </div>
       </section>
 
       <section className="space-y-3">

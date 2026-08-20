@@ -76,6 +76,7 @@ const commandeSchema = z
   .object({
     bienType: z.enum(["VOITURE", "MAISON"]),
     marqueModeleOuSerrure: z.string().min(1, "Ce champ est requis"),
+    anneeVehicule: z.number().int().min(1970).max(new Date().getFullYear() + 1).optional(),
     avecProgrammation: z.boolean(),
     quantite: z.number().int().min(1).max(20),
     modeLivraison: z.enum(["RETRAIT", "LIVRAISON"]),
@@ -87,7 +88,11 @@ const commandeSchema = z
   .refine(
     (data) => data.modeLivraison !== "LIVRAISON" || (data.adresseLivraison?.length ?? 0) >= 5,
     { message: "Adresse de livraison requise", path: ["adresseLivraison"] },
-  );
+  )
+  .refine((data) => data.bienType !== "VOITURE" || data.anneeVehicule != null, {
+    message: "Année du véhicule requise",
+    path: ["anneeVehicule"],
+  });
 
 export async function createCommandeAction(
   input: z.infer<typeof commandeSchema>,
@@ -106,14 +111,15 @@ export async function createCommandeAction(
   await withTransaction(async (client) => {
     await client.query(
       `INSERT INTO demandes (
-        id, kind, bien_type, marque_modele_ou_serrure, avec_programmation, quantite,
+        id, kind, bien_type, marque_modele_ou_serrure, annee_vehicule, avec_programmation, quantite,
         mode_livraison, adresse_livraison, latitude, longitude,
         nom_contact, telephone_contact, email_contact, status
-      ) VALUES ($1,'COMMANDE',$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,'EN_ATTENTE')`,
+      ) VALUES ($1,'COMMANDE',$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,'EN_ATTENTE')`,
       [
         id,
         data.bienType,
         data.marqueModeleOuSerrure,
+        data.anneeVehicule ?? null,
         data.avecProgrammation,
         data.quantite,
         data.modeLivraison,

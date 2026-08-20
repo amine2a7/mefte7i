@@ -29,6 +29,7 @@ import { AgentPerformanceChart } from "@/components/dashboard/admin/agent-perfor
 import { TransactionsTable } from "@/components/dashboard/admin/transactions-table";
 import { AgentsManagement } from "@/components/dashboard/admin/agents-management";
 import { AgentDashboardClient } from "@/components/dashboard/agent/agent-dashboard-client";
+import { DeleteDemandesDialog } from "@/components/dashboard/admin/delete-demandes-dialog";
 
 export default async function AdminDashboardPage() {
   const session = await getSession();
@@ -119,7 +120,10 @@ export default async function AdminDashboardPage() {
               </div>
             </TabsContent>
 
-            <TabsContent value="demandes">
+            <TabsContent value="demandes" className="space-y-4">
+              <div className="flex justify-end">
+                <DeleteDemandesDialog />
+              </div>
               <AgentDashboardClient demandes={demandes} />
             </TabsContent>
 

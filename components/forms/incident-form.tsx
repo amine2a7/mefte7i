@@ -28,6 +28,7 @@ const VOITURE_PROBLEMS = [
   { value: "telecommande_hs", label: "Télécommande HS" },
   { value: "perte_cle", label: "Perte de clé" },
   { value: "cle_bloquee_contact", label: "Clé bloquée dans le contact" },
+  { value: "reparation_serrure_porte", label: "Réparation serrure de porte" },
   { value: "autre", label: "Autre" },
 ];
 

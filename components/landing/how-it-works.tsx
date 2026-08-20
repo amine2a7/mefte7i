@@ -15,9 +15,9 @@ const STEPS = [
   },
   {
     icon: Wrench,
-    title: "Intervention ou livraison",
+    title: "Intervention ou retrait",
     description:
-      "Réparation sur place ou livraison de votre nouvelle clé, selon votre demande.",
+      "Réparation sur place ou retrait de votre nouvelle clé en agence, selon votre demande.",
   },
   {
     icon: ShieldCheck,

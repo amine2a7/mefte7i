@@ -22,7 +22,7 @@ const TESTIMONIALS = [
     name: "Sophie L.",
     role: "Commande de clé neuve",
     quote:
-      "J'ai suivi ma commande en temps réel depuis mon espace client, du dépôt de la demande jusqu'à la livraison.",
+      "Commande passée en 2 minutes depuis mon téléphone, ma clé était prête en agence le jour même.",
   },
 ];
 

@@ -47,6 +47,9 @@ export function Header() {
 
         <div className="hidden items-center gap-3 md:flex">
           <Badge24 />
+          <Button variant="ghost" render={<Link href="/ar" />} nativeButton={false} className="h-9 px-3 text-xs">
+            العربية
+          </Button>
           <Button variant="ghost" render={<Link href="/login" />} nativeButton={false}>
             Espace agent
           </Button>
@@ -78,6 +81,9 @@ export function Header() {
                 </a>
               ))}
               <div className="mt-2 flex flex-col gap-2">
+                <Button variant="outline" render={<Link href="/ar" />} nativeButton={false} onClick={() => setOpen(false)}>
+                  العربية
+                </Button>
                 <Button variant="outline" render={<Link href="/login" />} nativeButton={false} onClick={() => setOpen(false)}>
                   Espace agent
                 </Button>

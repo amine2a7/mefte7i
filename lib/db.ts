@@ -67,6 +67,7 @@ export function mapDemande(row: Record<string, unknown>): Demande {
     problemType: row.problem_type as string | null,
     description: row.description as string | null,
     marqueModeleOuSerrure: row.marque_modele_ou_serrure as string | null,
+    anneeVehicule: row.annee_vehicule != null ? Number(row.annee_vehicule) : null,
     avecProgrammation: row.avec_programmation as boolean | null,
     quantite: row.quantite as number | null,
     modeLivraison: row.mode_livraison as string | null,

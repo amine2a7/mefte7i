@@ -39,6 +39,7 @@ CREATE TABLE demandes (
 
   -- Commande-specific
   marque_modele_ou_serrure TEXT,
+  annee_vehicule INTEGER,
   avec_programmation BOOLEAN,
   quantite INTEGER,
   mode_livraison TEXT,

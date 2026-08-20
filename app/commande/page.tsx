@@ -14,7 +14,7 @@ export default function CommandePage() {
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">Commander une clé</h1>
             <p className="text-sm text-muted-foreground">
-              Clé neuve, avec ou sans programmation, livrée ou à retirer en agence.
+              Clé neuve, avec ou sans programmation, à retirer en agence.
             </p>
           </div>
         </div>

@@ -23,6 +23,7 @@ export interface Demande {
   problemType: string | null;
   description: string | null;
   marqueModeleOuSerrure: string | null;
+  anneeVehicule: number | null;
   avecProgrammation: boolean | null;
   quantite: number | null;
   modeLivraison: string | null;

@@ -129,6 +129,12 @@ export function DemandeDetailSheet({
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4 text-sm">
+              {demande.bienType === "VOITURE" && (
+                <div>
+                  <p className="text-muted-foreground">Année</p>
+                  <p>{demande.anneeVehicule ?? "—"}</p>
+                </div>
+              )}
               <div>
                 <p className="text-muted-foreground">Programmation</p>
                 <p>{demande.avecProgrammation ? "Oui" : "Non"}</p>
