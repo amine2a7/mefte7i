@@ -30,15 +30,20 @@ export function LoginForm({ next }: { next?: string }) {
 
   async function onSubmit(values: FormValues) {
     setLoading(true);
-    const result = await loginAction(values);
-    setLoading(false);
-    if (!result.success) {
-      toast.error(result.error);
-      return;
+    try {
+      const result = await loginAction(values);
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Connexion réussie");
+      router.push(next || result.data.redirectTo);
+      router.refresh();
+    } catch {
+      toast.error("Erreur serveur. Réessayez dans un instant.");
+    } finally {
+      setLoading(false);
     }
-    toast.success("Connexion réussie");
-    router.push(next || result.data.redirectTo);
-    router.refresh();
   }
 
   return (

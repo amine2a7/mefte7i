@@ -27,28 +27,33 @@ export async function loginAction(
   }
   const { email, password } = parsed.data;
 
-  const row = await queryOne("SELECT * FROM users WHERE lower(email) = lower($1)", [email]);
-  const user = row ? mapUser(row) : null;
-  if (!user) {
-    return { success: false, error: "Email ou mot de passe incorrect" };
-  }
-  if (!user.active) {
-    return { success: false, error: "Ce compte a été désactivé" };
-  }
+  try {
+    const row = await queryOne("SELECT * FROM users WHERE lower(email) = lower($1)", [email]);
+    const user = row ? mapUser(row) : null;
+    if (!user) {
+      return { success: false, error: "Email ou mot de passe incorrect" };
+    }
+    if (!user.active) {
+      return { success: false, error: "Ce compte a été désactivé" };
+    }
 
-  const valid = await verifyPassword(password, user.passwordHash);
-  if (!valid) {
-    return { success: false, error: "Email ou mot de passe incorrect" };
+    const valid = await verifyPassword(password, user.passwordHash);
+    if (!valid) {
+      return { success: false, error: "Email ou mot de passe incorrect" };
+    }
+
+    await createSessionCookie({
+      userId: user.id,
+      role: user.role,
+      name: user.name,
+      email: user.email,
+    });
+
+    return { success: true, data: { redirectTo: dashboardPathForRole(user.role) } };
+  } catch (e) {
+    console.error("loginAction failed", e);
+    return { success: false, error: "Erreur serveur. Réessayez dans un instant." };
   }
-
-  await createSessionCookie({
-    userId: user.id,
-    role: user.role,
-    name: user.name,
-    email: user.email,
-  });
-
-  return { success: true, data: { redirectTo: dashboardPathForRole(user.role) } };
 }
 
 export async function logoutAction(): Promise<void> {

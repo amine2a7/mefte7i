@@ -81,15 +81,20 @@ export function IncidentForm() {
 
   async function onSubmit(values: FormValues) {
     setLoading(true);
-    const result = await createIncidentAction({ ...values, photos });
-    setLoading(false);
-    if (!result.success) {
-      toast.error(result.error);
-      return;
+    try {
+      const result = await createIncidentAction({ ...values, photos });
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Votre demande a été envoyée");
+      setClientCode(result.data.clientCode);
+      setSubmitted(true);
+    } catch {
+      toast.error("Erreur serveur. Réessayez dans un instant, ou appelez-nous directement.");
+    } finally {
+      setLoading(false);
     }
-    toast.success("Votre demande a été envoyée");
-    setClientCode(result.data.clientCode);
-    setSubmitted(true);
   }
 
   if (submitted) {

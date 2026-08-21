@@ -59,15 +59,20 @@ export function CommandeForm() {
 
   async function onSubmit(values: FormValues) {
     setLoading(true);
-    const result = await createCommandeAction({ ...values, modeLivraison: "RETRAIT" });
-    setLoading(false);
-    if (!result.success) {
-      toast.error(result.error);
-      return;
+    try {
+      const result = await createCommandeAction({ ...values, modeLivraison: "RETRAIT" });
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Votre commande a été envoyée");
+      setClientCode(result.data.clientCode);
+      setSubmitted(true);
+    } catch {
+      toast.error("Erreur serveur. Réessayez dans un instant, ou appelez-nous directement.");
+    } finally {
+      setLoading(false);
     }
-    toast.success("Votre commande a été envoyée");
-    setClientCode(result.data.clientCode);
-    setSubmitted(true);
   }
 
   if (submitted) {
