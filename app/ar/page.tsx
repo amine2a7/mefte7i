@@ -53,10 +53,10 @@ const SERVICES = [
 ];
 
 const STEPS = [
-  { icon: ClipboardList, title: "صف احتياجك", description: "أبلغ عن حادث أو اطلب مفتاحًا في نقرات قليلة من هاتفك." },
+  { icon: ClipboardList, title: "صف احتياجك", description: "أبلغ عن حادث أو اطلب مفتاحًا في نقرات قليلة. ستحصل على رمز تأكيد خاص بك — احتفظ به جيدًا." },
   { icon: PhoneCall, title: "وكيل يتصل بك", description: "يؤكد وكيل طلبك، يقيّم المشكلة ويقترح عليك السعر." },
-  { icon: Wrench, title: "تدخل أو تسليم", description: "إصلاح في الموقع أو تسليم مفتاحك الجديد حسب طلبك." },
-  { icon: ShieldCheck, title: "دفع آمن", description: "تدفع فقط بعد انتهاء التدخل والتأكد منه." },
+  { icon: Wrench, title: "تدخل أو استلام", description: "إصلاح في الموقع أو استلام مفتاحك الجديد من الوكالة حسب طلبك." },
+  { icon: KeyRound, title: "أنت من يؤكد، وهذا ضمانك", description: "بعد انتهاء الخدمة، أكّد الدفع بنفسك عبر صفحة التتبع برقمك ورمزك — لا شيء يُعتمد دون موافقتك." },
 ];
 
 const TESTIMONIALS = [

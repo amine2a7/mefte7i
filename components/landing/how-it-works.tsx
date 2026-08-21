@@ -1,11 +1,11 @@
-import { ClipboardList, PhoneCall, Wrench, ShieldCheck } from "lucide-react";
+import { ClipboardList, KeyRound, PhoneCall, Wrench } from "lucide-react";
 
 const STEPS = [
   {
     icon: ClipboardList,
     title: "Décrivez votre besoin",
     description:
-      "Signalez un incident ou commandez une clé en quelques clics depuis votre téléphone.",
+      "Signalez un incident ou commandez une clé en quelques clics. Vous recevez un code de confirmation unique : gardez-le précieusement.",
   },
   {
     icon: PhoneCall,
@@ -20,9 +20,10 @@ const STEPS = [
       "Réparation sur place ou retrait de votre nouvelle clé en agence, selon votre demande.",
   },
   {
-    icon: ShieldCheck,
-    title: "Paiement sécurisé",
-    description: "Vous payez une fois l'intervention terminée et validée.",
+    icon: KeyRound,
+    title: "Vous confirmez, c'est votre garantie",
+    description:
+      "Une fois le service terminé, confirmez vous-même le paiement sur la page de suivi avec votre numéro et votre code : rien n'est validé sans votre accord.",
   },
 ];
 
