@@ -27,7 +27,7 @@ export async function loginAction(
   }
   const { email, password } = parsed.data;
 
-  const row = await queryOne("SELECT * FROM users WHERE email = $1", [email]);
+  const row = await queryOne("SELECT * FROM users WHERE lower(email) = lower($1)", [email]);
   const user = row ? mapUser(row) : null;
   if (!user) {
     return { success: false, error: "Email ou mot de passe incorrect" };
